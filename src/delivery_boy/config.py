@@ -22,7 +22,9 @@ class AppConfig:
     request_timeout_seconds: float
     request_retries: int
     max_posts_per_channel: int
+    first_run_max_posts_per_channel: int
     max_message_length: int
+    send_delay_seconds: float
     telegram_web_base_url: str
     log_level: str
     user_agent: str
@@ -94,7 +96,9 @@ def load_config() -> AppConfig:
         request_timeout_seconds=float(os.getenv("REQUEST_TIMEOUT_SECONDS", "15")),
         request_retries=int(os.getenv("REQUEST_RETRIES", "3")),
         max_posts_per_channel=int(os.getenv("MAX_POSTS_PER_CHANNEL", "10")),
+        first_run_max_posts_per_channel=int(os.getenv("FIRST_RUN_MAX_POSTS_PER_CHANNEL", "2")),
         max_message_length=int(os.getenv("MAX_MESSAGE_LENGTH", "4096")),
+        send_delay_seconds=float(os.getenv("SEND_DELAY_SECONDS", "1.5")),
         telegram_web_base_url=os.getenv("TELEGRAM_WEB_BASE_URL", "https://t.me").rstrip("/"),
         log_level=os.getenv("LOG_LEVEL", "INFO").upper(),
         user_agent=os.getenv(
@@ -107,7 +111,11 @@ def load_config() -> AppConfig:
 
     if config.poll_interval_seconds < 10:
         raise ValueError("POLL_INTERVAL_SECONDS must be at least 10.")
+    if config.first_run_max_posts_per_channel < 1:
+        raise ValueError("FIRST_RUN_MAX_POSTS_PER_CHANNEL must be at least 1.")
     if config.max_message_length <= 0:
         raise ValueError("MAX_MESSAGE_LENGTH must be positive.")
+    if config.send_delay_seconds < 0:
+        raise ValueError("SEND_DELAY_SECONDS must be zero or positive.")
 
     return config

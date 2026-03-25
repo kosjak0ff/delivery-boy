@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import logging
+from asyncio import sleep
 
 from telegram import Bot
-from telegram.error import TelegramError
+from telegram.error import RetryAfter, TelegramError
 
 from delivery_boy.models import ParsedPost
 
@@ -30,20 +31,32 @@ class TelegramForwarder:
 
     async def forward_post(self, post: ParsedPost) -> None:
         message = self._build_message(post)
-        try:
-            await self._bot.send_message(
-                chat_id=self._chat_id,
-                text=message,
-                message_thread_id=self._message_thread_id,
-                disable_web_page_preview=True,
-            )
-        except TelegramError:
-            self._logger.exception(
-                "Failed to forward post channel=%s post_id=%s",
-                post.channel_username,
-                post.post_id,
-            )
-            raise
+        for attempt in range(1, 3):
+            try:
+                await self._bot.send_message(
+                    chat_id=self._chat_id,
+                    text=message,
+                    message_thread_id=self._message_thread_id,
+                    disable_web_page_preview=True,
+                )
+                return
+            except RetryAfter as error:
+                self._logger.warning(
+                    "Telegram flood control for channel=%s post_id=%s, sleeping %.1f seconds before retry.",
+                    post.channel_username,
+                    post.post_id,
+                    error.retry_after,
+                )
+                if attempt >= 2:
+                    raise
+                await sleep(float(error.retry_after) + 1.0)
+            except TelegramError:
+                self._logger.exception(
+                    "Failed to forward post channel=%s post_id=%s",
+                    post.channel_username,
+                    post.post_id,
+                )
+                raise
 
     def _build_message(self, post: ParsedPost) -> str:
         prefix = f"@{post.channel_username}"

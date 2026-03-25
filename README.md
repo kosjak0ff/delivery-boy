@@ -70,6 +70,7 @@ cp channels.yaml.example channels.yaml
 - `TELEGRAM_CHAT_ID` - ID личного чата, группы или forum-supergroup
 - `TELEGRAM_MESSAGE_THREAD_ID` - ID топика, если нужно отправлять в конкретный topic; иначе оставьте пустым
 - при необходимости скорректируйте `POLL_INTERVAL_SECONDS`, `DATABASE_PATH`, `LOG_FILE_PATH`
+- для защиты от flood control можно уменьшить `FIRST_RUN_MAX_POSTS_PER_CHANNEL` и увеличить `SEND_DELAY_SECONDS`
 
 Пример:
 
@@ -77,6 +78,8 @@ cp channels.yaml.example channels.yaml
 TELEGRAM_BOT_TOKEN=123456789:replace_me
 TELEGRAM_CHAT_ID=-1001234567890
 TELEGRAM_MESSAGE_THREAD_ID=73
+FIRST_RUN_MAX_POSTS_PER_CHANNEL=2
+SEND_DELAY_SECONDS=1.5
 ```
 
 5. Заполните `channels.yaml`:
@@ -250,6 +253,7 @@ cp channels.yaml.example channels.yaml
 - `TELEGRAM_CHAT_ID` - your private chat ID, group ID, or forum supergroup ID
 - `TELEGRAM_MESSAGE_THREAD_ID` - the topic/thread ID if you want to send into a specific forum topic; otherwise leave it empty
 - optionally adjust `POLL_INTERVAL_SECONDS`, `DATABASE_PATH`, `LOG_FILE_PATH`
+- if Telegram rate limits the bot, lower `FIRST_RUN_MAX_POSTS_PER_CHANNEL` and increase `SEND_DELAY_SECONDS`
 
 Example:
 
@@ -257,6 +261,8 @@ Example:
 TELEGRAM_BOT_TOKEN=123456789:replace_me
 TELEGRAM_CHAT_ID=-1001234567890
 TELEGRAM_MESSAGE_THREAD_ID=73
+FIRST_RUN_MAX_POSTS_PER_CHANNEL=2
+SEND_DELAY_SECONDS=1.5
 ```
 
 5. Fill in `channels.yaml`:

@@ -44,6 +44,8 @@ async def run() -> None:
         telegram_web_client=telegram_web_client,
         forwarder=forwarder,
         max_posts_per_channel=config.max_posts_per_channel,
+        first_run_max_posts_per_channel=config.first_run_max_posts_per_channel,
+        send_delay_seconds=config.send_delay_seconds,
     )
 
     scheduler = AsyncIOScheduler()
