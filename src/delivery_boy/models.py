@@ -15,6 +15,7 @@ class ParsedPost:
     post_id: int
     url: str
     text: str
+    html_text: str
     published_at: datetime | None
 
 

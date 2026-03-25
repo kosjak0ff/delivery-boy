@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import logging
 from asyncio import sleep
+from html import escape
 
 from telegram import Bot
+from telegram.constants import ParseMode
 from telegram.error import RetryAfter, TelegramError
 
 from delivery_boy.models import ParsedPost
@@ -30,13 +32,14 @@ class TelegramForwarder:
         await self._bot.shutdown()
 
     async def forward_post(self, post: ParsedPost) -> None:
-        message = self._build_message(post)
+        message, parse_mode = self._build_message(post)
         for attempt in range(1, 3):
             try:
                 await self._bot.send_message(
                     chat_id=self._chat_id,
                     text=message,
                     message_thread_id=self._message_thread_id,
+                    parse_mode=parse_mode,
                     disable_web_page_preview=True,
                 )
                 return
@@ -58,17 +61,27 @@ class TelegramForwarder:
                 )
                 raise
 
-    def _build_message(self, post: ParsedPost) -> str:
-        prefix = f"@{post.channel_username}"
+    def _build_message(self, post: ParsedPost) -> tuple[str, str | None]:
+        prefix_text = f"@{post.channel_username}"
+        prefix_html = escape(prefix_text)
         body = post.text.strip() or "[Post without text content]"
+        body_html = post.html_text.strip() or escape(body)
         link_label = f"Original: {post.url}"
+        link_html = f'Original: <a href="{escape(post.url, quote=True)}">{escape(post.url)}</a>'
         separator = "\n\n"
-        available = self._max_message_length - len(prefix) - len(link_label) - len(separator) * 2
+        available = self._max_message_length - len(prefix_text) - len(link_label) - len(separator) * 2
 
         if available < 1:
             available = 1
 
         if len(body) > available:
             body = body[: max(available - 1, 1)].rstrip() + "…"
+            return (
+                f"{prefix_text}{separator}{body}{separator}{link_label}",
+                None,
+            )
 
-        return f"{prefix}{separator}{body}{separator}{link_label}"
+        return (
+            f"{prefix_html}{separator}{body_html}{separator}{link_html}",
+            ParseMode.HTML,
+        )

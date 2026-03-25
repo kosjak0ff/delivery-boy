@@ -1,11 +1,46 @@
 from __future__ import annotations
 
 from datetime import datetime
+from html import escape
 import re
 
-from bs4 import BeautifulSoup, Tag
+from bs4 import BeautifulSoup, NavigableString, Tag
 
 from delivery_boy.models import ParsedPost
+
+
+def _render_html(node: Tag | NavigableString, base_url: str) -> str:
+    if isinstance(node, NavigableString):
+        return escape(str(node))
+
+    if not isinstance(node, Tag):
+        return ""
+
+    if node.name == "br":
+        return "<br>"
+
+    if node.name in {"p", "div", "blockquote"}:
+        return "".join(_render_html(child, base_url) for child in node.children) + "\n"
+
+    if node.name == "li":
+        return "- " + "".join(_render_html(child, base_url) for child in node.children) + "\n"
+
+    if node.name == "a":
+        href = (node.get("href") or "").strip()
+        if href.startswith("/"):
+            href = f"{base_url}{href}"
+        content = "".join(_render_html(child, base_url) for child in node.children).strip()
+        if href and content:
+            return f'<a href="{escape(href, quote=True)}">{content}</a>'
+        return content
+
+    if node.name in {"b", "strong", "i", "em", "u", "s", "code", "pre"}:
+        content = "".join(_render_html(child, base_url) for child in node.children)
+        if content:
+            return f"<{node.name}>{content}</{node.name}>"
+        return ""
+
+    return "".join(_render_html(child, base_url) for child in node.children)
 
 
 def _normalize_text(text_node: Tag) -> str:
@@ -29,6 +64,15 @@ def _normalize_text(text_node: Tag) -> str:
     text = re.sub(r" +", " ", text)
     text = re.sub(r" *\n *", "\n", text)
     return text
+
+
+def _normalize_html(text_node: Tag, base_url: str) -> str:
+    html = "".join(_render_html(child, base_url) for child in text_node.children)
+    html = re.sub(r"(?:<br>){3,}", "<br><br>", html)
+    html = re.sub(r"\n{3,}", "\n\n", html)
+    html = re.sub(r" *\n *", "\n", html)
+    html = re.sub(r"(?:\n<br>)+", "<br>", html)
+    return html.strip()
 
 
 def parse_channel_page(html: str, channel_username: str, base_url: str) -> list[ParsedPost]:
@@ -55,6 +99,7 @@ def parse_channel_page(html: str, channel_username: str, base_url: str) -> list[
 
         text_node = message.select_one(".tgme_widget_message_text")
         text = _normalize_text(text_node) if text_node else ""
+        html_text = _normalize_html(text_node, base_url) if text_node else ""
 
         date_node = message.select_one("a.tgme_widget_message_date time")
         published_at = None
@@ -70,6 +115,7 @@ def parse_channel_page(html: str, channel_username: str, base_url: str) -> list[
                 post_id=post_id,
                 url=f"{base_url}/{channel_username.lstrip('@')}/{post_id}",
                 text=text,
+                html_text=html_text,
                 published_at=published_at,
             )
         )
