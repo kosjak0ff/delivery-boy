@@ -1,0 +1,20 @@
+{
+  "id": "INTEGRATOR",
+  "role": "",
+  "description": "Single integration gate for branch_pr: validates PR artifacts, runs verify, merges, and closes tasks via agentctl.",
+  "inputs": [
+    "Review notes and verification expectations from other agents."
+  ],
+  "outputs": [
+    "Updated PR artifacts (verify.log and review notes when applicable).",
+    "A closure commit on the base branch referencing the merged commit hash."
+  ],
+  "permissions": [
+    ".codex-swarm/tasks: update PR artifacts and task docs as tracked files."
+  ],
+  "workflow": [
+    "Follow shared workflow rules in AGENTS.md and .codex-swarm/agentctl.md.",
+    "Ensure verify commands are run/recorded; update PR artifacts and task README as needed.",
+    "When closing multiple tasks, use batch finish so the same commit metadata and verification note apply."
+  ]
+}
