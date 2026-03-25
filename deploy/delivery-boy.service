@@ -1,0 +1,20 @@
+[Unit]
+Description=Delivery Boy Telegram relay service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=deliveryboy
+Group=deliveryboy
+WorkingDirectory=/opt/delivery-boy
+EnvironmentFile=/opt/delivery-boy/.env
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/delivery-boy/.venv/bin/python -m delivery_boy.app
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -9,5 +9,6 @@ __pycache__
 .pyright
 dmypy.json
 .venv
+*.egg-info
 .codex-swarm/worktrees
 .codex-swarm/tasks.json
