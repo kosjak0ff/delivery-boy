@@ -9,10 +9,17 @@ from delivery_boy.models import ParsedPost
 
 
 class TelegramForwarder:
-    def __init__(self, bot_token: str, target_chat_id: str, max_message_length: int) -> None:
+    def __init__(
+        self,
+        bot_token: str,
+        chat_id: str,
+        message_thread_id: int | None,
+        max_message_length: int,
+    ) -> None:
         self._logger = logging.getLogger(__name__)
         self._bot = Bot(token=bot_token)
-        self._target_chat_id = target_chat_id
+        self._chat_id = chat_id
+        self._message_thread_id = message_thread_id
         self._max_message_length = max_message_length
 
     async def initialize(self) -> None:
@@ -25,8 +32,9 @@ class TelegramForwarder:
         message = self._build_message(post)
         try:
             await self._bot.send_message(
-                chat_id=self._target_chat_id,
+                chat_id=self._chat_id,
                 text=message,
+                message_thread_id=self._message_thread_id,
                 disable_web_page_preview=True,
             )
         except TelegramError:

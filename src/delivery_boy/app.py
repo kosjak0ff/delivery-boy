@@ -33,7 +33,8 @@ async def run() -> None:
     )
     forwarder = TelegramForwarder(
         bot_token=config.bot_token,
-        target_chat_id=config.target_chat_id,
+        chat_id=config.chat_id,
+        message_thread_id=config.message_thread_id,
         max_message_length=config.max_message_length,
     )
     await forwarder.initialize()

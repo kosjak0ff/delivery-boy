@@ -67,8 +67,17 @@ cp channels.yaml.example channels.yaml
 4. Заполните `.env`:
 
 - `TELEGRAM_BOT_TOKEN` - токен вашего бота
-- `TELEGRAM_TARGET_CHAT_ID` - ID личного чата или группы
+- `TELEGRAM_CHAT_ID` - ID личного чата, группы или forum-supergroup
+- `TELEGRAM_MESSAGE_THREAD_ID` - ID топика, если нужно отправлять в конкретный topic; иначе оставьте пустым
 - при необходимости скорректируйте `POLL_INTERVAL_SECONDS`, `DATABASE_PATH`, `LOG_FILE_PATH`
+
+Пример:
+
+```env
+TELEGRAM_BOT_TOKEN=123456789:replace_me
+TELEGRAM_CHAT_ID=-1001234567890
+TELEGRAM_MESSAGE_THREAD_ID=73
+```
 
 5. Заполните `channels.yaml`:
 
@@ -238,8 +247,17 @@ cp channels.yaml.example channels.yaml
 4. Fill in `.env`:
 
 - `TELEGRAM_BOT_TOKEN` - your bot token
-- `TELEGRAM_TARGET_CHAT_ID` - your private chat ID or group ID
+- `TELEGRAM_CHAT_ID` - your private chat ID, group ID, or forum supergroup ID
+- `TELEGRAM_MESSAGE_THREAD_ID` - the topic/thread ID if you want to send into a specific forum topic; otherwise leave it empty
 - optionally adjust `POLL_INTERVAL_SECONDS`, `DATABASE_PATH`, `LOG_FILE_PATH`
+
+Example:
+
+```env
+TELEGRAM_BOT_TOKEN=123456789:replace_me
+TELEGRAM_CHAT_ID=-1001234567890
+TELEGRAM_MESSAGE_THREAD_ID=73
+```
 
 5. Fill in `channels.yaml`:
 

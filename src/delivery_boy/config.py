@@ -13,7 +13,8 @@ from delivery_boy.models import ChannelConfig
 @dataclass(slots=True, frozen=True)
 class AppConfig:
     bot_token: str
-    target_chat_id: str
+    chat_id: str
+    message_thread_id: int | None
     channels_file: Path
     database_path: Path
     log_file_path: Path
@@ -80,7 +81,12 @@ def load_config() -> AppConfig:
 
     config = AppConfig(
         bot_token=_require_env("TELEGRAM_BOT_TOKEN"),
-        target_chat_id=_require_env("TELEGRAM_TARGET_CHAT_ID"),
+        chat_id=_require_env("TELEGRAM_CHAT_ID"),
+        message_thread_id=(
+            int(os.getenv("TELEGRAM_MESSAGE_THREAD_ID", "").strip())
+            if os.getenv("TELEGRAM_MESSAGE_THREAD_ID", "").strip()
+            else None
+        ),
         channels_file=channels_file,
         database_path=database_path,
         log_file_path=log_file_path,
