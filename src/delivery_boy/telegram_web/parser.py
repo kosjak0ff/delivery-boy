@@ -1,10 +1,34 @@
 from __future__ import annotations
 
 from datetime import datetime
+import re
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 from delivery_boy.models import ParsedPost
+
+
+def _normalize_text(text_node: Tag) -> str:
+    fragment = BeautifulSoup(str(text_node), "html.parser")
+
+    for br in fragment.select("br"):
+        br.replace_with("\n")
+
+    for block in fragment.select("p, div, blockquote"):
+        block.append("\n")
+
+    for item in fragment.select("li"):
+        item.insert(0, "- ")
+        item.append("\n")
+
+    raw_text = fragment.get_text("", strip=False).replace("\xa0", " ")
+    raw_text = re.sub(r"\n{3,}", "\n\n", raw_text)
+
+    lines = [line.strip() for line in raw_text.splitlines()]
+    text = "\n".join(lines).strip()
+    text = re.sub(r" +", " ", text)
+    text = re.sub(r" *\n *", "\n", text)
+    return text
 
 
 def parse_channel_page(html: str, channel_username: str, base_url: str) -> list[ParsedPost]:
@@ -12,6 +36,10 @@ def parse_channel_page(html: str, channel_username: str, base_url: str) -> list[
     posts: list[ParsedPost] = []
 
     for message in soup.select("div.tgme_widget_message[data-post]"):
+        classes = set(message.get("class", []))
+        if "service_message" in classes:
+            continue
+
         data_post = message.get("data-post", "").strip()
         if "/" not in data_post:
             continue
@@ -26,7 +54,7 @@ def parse_channel_page(html: str, channel_username: str, base_url: str) -> list[
             continue
 
         text_node = message.select_one(".tgme_widget_message_text")
-        text = text_node.get_text("\n", strip=True) if text_node else ""
+        text = _normalize_text(text_node) if text_node else ""
 
         date_node = message.select_one("a.tgme_widget_message_date time")
         published_at = None
