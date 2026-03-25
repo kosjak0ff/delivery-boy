@@ -1,11 +1,12 @@
 ---
 id: "202603251854-NHH4FX"
 title: "Implement monitoring core and storage"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: ["[\"202603251854-9YCYQA\"]"]
 tags: []
+commit: { hash: "ba0fddd430d049b9e85528bff8d5288d22ff1e8d", message: "✨ 9YCYQA NHH4FX SM51CP 3YGT6P build the Telegram channel relay MVP service" }
 comments:
   - { author: "CODER", body: "Start: implement runtime configuration, logging, SQLite persistence, per-channel state tracking, and the monitoring loop that coordinates polling and deduplication for the Telegram relay service." }
 doc_version: 2

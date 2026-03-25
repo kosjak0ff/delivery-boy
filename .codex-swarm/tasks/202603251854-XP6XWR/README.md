@@ -1,11 +1,12 @@
 ---
 id: "202603251854-XP6XWR"
 title: "Build Telegram channel relay MVP"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: []
+commit: { hash: "ba0fddd430d049b9e85528bff8d5288d22ff1e8d", message: "✨ 9YCYQA NHH4FX SM51CP 3YGT6P build the Telegram channel relay MVP service" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: create the project tracking task, decompose the approved implementation plan into execution steps, and record the initial scope, risks, verification, and rollback notes before coding begins." }
 doc_version: 2

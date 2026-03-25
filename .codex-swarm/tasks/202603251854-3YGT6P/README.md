@@ -1,11 +1,12 @@
 ---
 id: "202603251854-3YGT6P"
 title: "Add tests and deployment docs"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "TESTER"
 depends_on: ["[\"202603251854-SM51CP\"]"]
 tags: []
+commit: { hash: "ba0fddd430d049b9e85528bff8d5288d22ff1e8d", message: "✨ 9YCYQA NHH4FX SM51CP 3YGT6P build the Telegram channel relay MVP service" }
 comments:
   - { author: "TESTER", body: "Start: add automated coverage for parser and deduplication behavior, complete the bilingual operator documentation, and document VPS plus systemd deployment and real-world verification steps." }
 doc_version: 2

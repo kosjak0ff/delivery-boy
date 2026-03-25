@@ -1,11 +1,12 @@
 ---
 id: "202603251854-SM51CP"
 title: "Implement Telegram web parsing and forwarding"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: ["[\"202603251854-NHH4FX\"]"]
 tags: []
+commit: { hash: "ba0fddd430d049b9e85528bff8d5288d22ff1e8d", message: "✨ 9YCYQA NHH4FX SM51CP 3YGT6P build the Telegram channel relay MVP service" }
 comments:
   - { author: "CODER", body: "Start: implement the isolated Telegram web fetch-and-parse module plus Telegram Bot API forwarding with safe message trimming and resilient error handling for temporary failures." }
 doc_version: 2

@@ -1,11 +1,12 @@
 ---
 id: "202603251854-9YCYQA"
 title: "Scaffold delivery service project"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: ["[\"202603251854-XP6XWR\"]"]
 tags: []
+commit: { hash: "ba0fddd430d049b9e85528bff8d5288d22ff1e8d", message: "✨ 9YCYQA NHH4FX SM51CP 3YGT6P build the Telegram channel relay MVP service" }
 comments:
   - { author: "CODER", body: "Start: create the initial service scaffold including package layout, configuration examples, deployment artifacts, test harness, and baseline documentation so the rest of the MVP can be implemented on a clean foundation." }
 doc_version: 2
