@@ -16,6 +16,7 @@ def test_repository_deduplicates_sent_posts(tmp_path) -> None:
         url="https://t.me/samplechannel/5",
         text="hello",
         html_text="hello",
+        has_audio=False,
         published_at=datetime.now(UTC),
     )
 

@@ -35,6 +35,8 @@ async def run() -> None:
         bot_token=config.bot_token,
         chat_id=config.chat_id,
         message_thread_id=config.message_thread_id,
+        audio_chat_id=config.audio_chat_id,
+        audio_message_thread_id=config.audio_message_thread_id,
         max_message_length=config.max_message_length,
     )
     await forwarder.initialize()

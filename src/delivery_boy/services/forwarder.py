@@ -17,12 +17,16 @@ class TelegramForwarder:
         bot_token: str,
         chat_id: str,
         message_thread_id: int | None,
+        audio_chat_id: str | None,
+        audio_message_thread_id: int | None,
         max_message_length: int,
     ) -> None:
         self._logger = logging.getLogger(__name__)
         self._bot = Bot(token=bot_token)
         self._chat_id = chat_id
         self._message_thread_id = message_thread_id
+        self._audio_chat_id = audio_chat_id
+        self._audio_message_thread_id = audio_message_thread_id
         self._max_message_length = max_message_length
 
     async def initialize(self) -> None:
@@ -34,12 +38,13 @@ class TelegramForwarder:
     async def forward_post(self, post: ParsedPost) -> None:
         message, parse_mode = self._build_message(post)
         plain_message = self._build_plain_message(post)
+        chat_id, message_thread_id = self._resolve_destination(post)
         for attempt in range(1, 3):
             try:
                 await self._bot.send_message(
-                    chat_id=self._chat_id,
+                    chat_id=chat_id,
                     text=message,
-                    message_thread_id=self._message_thread_id,
+                    message_thread_id=message_thread_id,
                     parse_mode=parse_mode,
                     disable_web_page_preview=True,
                 )
@@ -77,6 +82,11 @@ class TelegramForwarder:
                     post.post_id,
                 )
                 raise
+
+    def _resolve_destination(self, post: ParsedPost) -> tuple[str, int | None]:
+        if post.has_audio and self._audio_chat_id:
+            return self._audio_chat_id, self._audio_message_thread_id
+        return self._chat_id, self._message_thread_id
 
     def _build_message(self, post: ParsedPost) -> tuple[str, str | None]:
         prefix_text = f"@{post.channel_username}"

@@ -15,6 +15,8 @@ class AppConfig:
     bot_token: str
     chat_id: str
     message_thread_id: int | None
+    audio_chat_id: str | None
+    audio_message_thread_id: int | None
     channels_file: Path
     database_path: Path
     log_file_path: Path
@@ -87,6 +89,12 @@ def load_config() -> AppConfig:
         message_thread_id=(
             int(os.getenv("TELEGRAM_MESSAGE_THREAD_ID", "").strip())
             if os.getenv("TELEGRAM_MESSAGE_THREAD_ID", "").strip()
+            else None
+        ),
+        audio_chat_id=os.getenv("TELEGRAM_AUDIO_CHAT_ID", "").strip() or None,
+        audio_message_thread_id=(
+            int(os.getenv("TELEGRAM_AUDIO_MESSAGE_THREAD_ID", "").strip())
+            if os.getenv("TELEGRAM_AUDIO_MESSAGE_THREAD_ID", "").strip()
             else None
         ),
         channels_file=channels_file,

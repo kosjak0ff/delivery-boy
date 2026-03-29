@@ -51,6 +51,7 @@ def build_post(post_id: int) -> ParsedPost:
         url=f"https://t.me/samplechannel/{post_id}",
         text=f"post {post_id}",
         html_text=f"post {post_id}",
+        has_audio=False,
         published_at=datetime.now(UTC),
     )
 

@@ -73,6 +73,21 @@ def _normalize_html(text_node: Tag, base_url: str) -> str:
     return html.strip()
 
 
+def _has_audio(message: Tag) -> bool:
+    if message.select_one(
+        ".tgme_widget_message_voice, .tgme_widget_message_audio, "
+        ".tgme_widget_message_document, .tgme_widget_message_document_wrap, audio"
+    ):
+        return True
+
+    for link in message.select("a[href]"):
+        href = (link.get("href") or "").lower()
+        if any(ext in href for ext in [".mp3", ".m4a", ".ogg", ".wav", ".flac", ".aac"]):
+            return True
+
+    return False
+
+
 def parse_channel_page(html: str, channel_username: str, base_url: str) -> list[ParsedPost]:
     soup = BeautifulSoup(html, "html.parser")
     posts: list[ParsedPost] = []
@@ -98,6 +113,7 @@ def parse_channel_page(html: str, channel_username: str, base_url: str) -> list[
         text_node = message.select_one(".tgme_widget_message_text")
         text = _normalize_text(text_node) if text_node else ""
         html_text = _normalize_html(text_node, base_url) if text_node else ""
+        has_audio = _has_audio(message)
 
         date_node = message.select_one("a.tgme_widget_message_date time")
         published_at = None
@@ -114,6 +130,7 @@ def parse_channel_page(html: str, channel_username: str, base_url: str) -> list[
                 url=f"{base_url}/{channel_username.lstrip('@')}/{post_id}",
                 text=text,
                 html_text=html_text,
+                has_audio=has_audio,
                 published_at=published_at,
             )
         )

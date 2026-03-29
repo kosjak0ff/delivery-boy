@@ -16,6 +16,7 @@ class ParsedPost:
     url: str
     text: str
     html_text: str
+    has_audio: bool
     published_at: datetime | None
 
 

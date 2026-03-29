@@ -69,6 +69,8 @@ cp channels.yaml.example channels.yaml
 - `TELEGRAM_BOT_TOKEN` - токен вашего бота
 - `TELEGRAM_CHAT_ID` - ID личного чата, группы или forum-supergroup
 - `TELEGRAM_MESSAGE_THREAD_ID` - ID топика, если нужно отправлять в конкретный topic; иначе оставьте пустым
+- `TELEGRAM_AUDIO_CHAT_ID` - отдельный chat ID для постов, где найдено аудио; если пусто, аудио идет в основной чат
+- `TELEGRAM_AUDIO_MESSAGE_THREAD_ID` - отдельный topic/thread ID для аудио-маршрута
 - при необходимости скорректируйте `POLL_INTERVAL_SECONDS`, `DATABASE_PATH`, `LOG_FILE_PATH`
 - для защиты от flood control можно уменьшить `FIRST_RUN_MAX_POSTS_PER_CHANNEL` и увеличить `SEND_DELAY_SECONDS`
 
@@ -78,6 +80,8 @@ cp channels.yaml.example channels.yaml
 TELEGRAM_BOT_TOKEN=123456789:replace_me
 TELEGRAM_CHAT_ID=-1001234567890
 TELEGRAM_MESSAGE_THREAD_ID=73
+TELEGRAM_AUDIO_CHAT_ID=-1001234567000
+TELEGRAM_AUDIO_MESSAGE_THREAD_ID=91
 FIRST_RUN_MAX_POSTS_PER_CHANNEL=2
 SEND_DELAY_SECONDS=1.5
 ```
@@ -252,6 +256,8 @@ cp channels.yaml.example channels.yaml
 - `TELEGRAM_BOT_TOKEN` - your bot token
 - `TELEGRAM_CHAT_ID` - your private chat ID, group ID, or forum supergroup ID
 - `TELEGRAM_MESSAGE_THREAD_ID` - the topic/thread ID if you want to send into a specific forum topic; otherwise leave it empty
+- `TELEGRAM_AUDIO_CHAT_ID` - a separate chat ID for posts where audio is detected; if empty, audio goes to the main destination
+- `TELEGRAM_AUDIO_MESSAGE_THREAD_ID` - a separate topic/thread ID for the audio route
 - optionally adjust `POLL_INTERVAL_SECONDS`, `DATABASE_PATH`, `LOG_FILE_PATH`
 - if Telegram rate limits the bot, lower `FIRST_RUN_MAX_POSTS_PER_CHANNEL` and increase `SEND_DELAY_SECONDS`
 
@@ -261,6 +267,8 @@ Example:
 TELEGRAM_BOT_TOKEN=123456789:replace_me
 TELEGRAM_CHAT_ID=-1001234567890
 TELEGRAM_MESSAGE_THREAD_ID=73
+TELEGRAM_AUDIO_CHAT_ID=-1001234567000
+TELEGRAM_AUDIO_MESSAGE_THREAD_ID=91
 FIRST_RUN_MAX_POSTS_PER_CHANNEL=2
 SEND_DELAY_SECONDS=1.5
 ```
