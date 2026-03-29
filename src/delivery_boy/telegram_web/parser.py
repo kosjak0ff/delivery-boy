@@ -17,7 +17,7 @@ def _render_html(node: Tag | NavigableString, base_url: str) -> str:
         return ""
 
     if node.name == "br":
-        return "<br>"
+        return "\n"
 
     if node.name in {"p", "div", "blockquote"}:
         return "".join(_render_html(child, base_url) for child in node.children) + "\n"
@@ -68,10 +68,8 @@ def _normalize_text(text_node: Tag) -> str:
 
 def _normalize_html(text_node: Tag, base_url: str) -> str:
     html = "".join(_render_html(child, base_url) for child in text_node.children)
-    html = re.sub(r"(?:<br>){3,}", "<br><br>", html)
     html = re.sub(r"\n{3,}", "\n\n", html)
     html = re.sub(r" *\n *", "\n", html)
-    html = re.sub(r"(?:\n<br>)+", "<br>", html)
     return html.strip()
 
 

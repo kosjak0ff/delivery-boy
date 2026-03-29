@@ -6,7 +6,7 @@ from html import escape
 
 from telegram import Bot
 from telegram.constants import ParseMode
-from telegram.error import RetryAfter, TelegramError
+from telegram.error import BadRequest, RetryAfter, TelegramError
 
 from delivery_boy.models import ParsedPost
 
@@ -33,6 +33,7 @@ class TelegramForwarder:
 
     async def forward_post(self, post: ParsedPost) -> None:
         message, parse_mode = self._build_message(post)
+        plain_message = self._build_plain_message(post)
         for attempt in range(1, 3):
             try:
                 await self._bot.send_message(
@@ -53,6 +54,22 @@ class TelegramForwarder:
                 if attempt >= 2:
                     raise
                 await sleep(float(error.retry_after) + 1.0)
+            except BadRequest as error:
+                if parse_mode == ParseMode.HTML and "Can't parse entities" in str(error):
+                    self._logger.warning(
+                        "Telegram rejected HTML entities for channel=%s post_id=%s, retrying as plain text.",
+                        post.channel_username,
+                        post.post_id,
+                    )
+                    message = plain_message
+                    parse_mode = None
+                    continue
+                self._logger.exception(
+                    "Bad request while forwarding post channel=%s post_id=%s",
+                    post.channel_username,
+                    post.post_id,
+                )
+                raise
             except TelegramError:
                 self._logger.exception(
                     "Failed to forward post channel=%s post_id=%s",
@@ -85,3 +102,18 @@ class TelegramForwarder:
             f"{prefix_html}{separator}{body_html}{separator}{link_html}",
             ParseMode.HTML,
         )
+
+    def _build_plain_message(self, post: ParsedPost) -> str:
+        prefix_text = f"@{post.channel_username}"
+        body = post.text.strip() or "[Post without text content]"
+        link_label = f"Original: {post.url}"
+        separator = "\n\n"
+        available = self._max_message_length - len(prefix_text) - len(link_label) - len(separator) * 2
+
+        if available < 1:
+            available = 1
+
+        if len(body) > available:
+            body = body[: max(available - 1, 1)].rstrip() + "…"
+
+        return f"{prefix_text}{separator}{body}{separator}{link_label}"

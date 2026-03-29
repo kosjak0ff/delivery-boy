@@ -47,7 +47,7 @@ def test_parse_channel_page_skips_service_messages_and_keeps_line_breaks() -> No
 
     assert [post.post_id for post in posts] == [101]
     assert posts[0].text == "First line\nSecond line"
-    assert posts[0].html_text == "First line<br>Second <b>line</b>"
+    assert posts[0].html_text == "First line\nSecond <b>line</b>"
 
 
 def test_parse_channel_page_keeps_hidden_links() -> None:
